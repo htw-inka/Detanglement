@@ -1,0 +1,19 @@
+{% extends "contact/base_site.html" %}
+{%load i18n %}
+{%load static %}
+{%block title %}Contact{% endblock %}
+{%block extrastyle %}<link rel="stylesheet" href="{% static 'style/contact.css' %}"></script>{% endblock %}
+{% block content %}
+<h1>Contact</h1>
+<div class="overview">
+  {% if form.is_multipart %}
+    <form enctype="multipart/form-data" method="post" action="/contact">{% csrf_token %}
+  {% else %}
+    <form method="post" action="/contact">{% csrf_token %}
+  {% endif %}
+  {{ form.as_p }}
+
+  <input id="submit" type="submit" value="{% trans 'Submit' %}" />
+</form>
+</div>
+{% endblock %}

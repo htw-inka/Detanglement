@@ -1,0 +1,23 @@
+{% extends "registration/datavis_base_site.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}Registration{% endblock %}
+{% block extrastyle %}<link rel="stylesheet" href="{% static 'style/registration.css' %}">{% endblock %}
+
+{% block content %}
+<h1>Registration</h1>
+<div class="overview">
+<p>Please enter your details:</p>
+<br/>
+  {% if form.is_multipart %}
+  <form enctype="multipart/form-data" method="post" action=".">{% csrf_token %}
+  {% else %}
+    <form method="post" action=".">{% csrf_token %}
+  {% endif %}
+  {{ form.as_p }}
+
+  <input type="submit" id="submit" value="{% trans 'Submit' %}" />
+</form>
+</div>
+{% endblock %}
