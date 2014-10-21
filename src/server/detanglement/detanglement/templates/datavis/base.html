@@ -1,0 +1,109 @@
+{% load staticfiles %}{% load firstof from future %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+<title>{% block title %}{% endblock %} | Detanglement</title>
+<!--Stylesheets-->
+        <link href="{% static 'style/style.css' %}" rel="stylesheet"/> 
+        <link href="{% static 'style/nav_style.css' %}" rel="stylesheet"/> 
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
+        {% block extrastyle %}{% endblock %}
+
+        <script src="{% static 'javascript/jquery-1.10.2.min.js'%}"></script>
+        <script src="{%static 'javascript/navStartup.js' %}"></script>
+
+{% block extrahead %}{% endblock %}
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+</head>
+{% load i18n %}
+
+<body class="body_main" align="center">
+    <header class="clearfix">
+    <a class="menu pull-right" data-position="right" href="#">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </a>
+    </header>
+    {% if user.is_authenticated %}
+    <div class="overlay"></div>
+
+    <nav class="right">
+      <ul>
+        <li>
+        <a href="/home"><i class="fa fa-home"></i>&nbsp;Home</a>
+        </li>
+        <li>
+        <a href="/settings"><i class="fa fa-cog"></i>&nbsp;Settings</a>
+        </li>
+        <li>
+        <a href="/help"><i class="fa fa-question"></i>&nbsp;About</a>
+        </li>
+        <li>
+        <a href="/contact"><i class="fa fa-envelope"></i>&nbsp;Contact</a>
+        </li>
+        <li>
+        <a href="https://github.com/hellerve/Detanglement"><i class="fa fa-github"></i>&nbsp;Github</a>
+        </li>
+        <li>
+        <a href="/imprint"><i class="fa fa-male"></i>&nbsp;Imprint</a>
+        </li>
+        <li>
+        <a href="/accounts/logout"><i class="fa fa-power-off"></i>&nbsp;Logout</a>
+        </li>
+      </ul>
+      </nav>
+    {% else %}
+    <div class="overlay"></div>
+
+    <nav class="right">
+      <ul>
+        <li>
+        <a href="/home"><i class="fa fa-home"></i>&nbsp;Home</a>
+        </li>
+        <li>
+        <a href="/imprint"><i class="fa fa-male"></i>&nbsp;Imprint</a>
+        </li>
+        <li>
+        <a href="/contact"><i class="fa fa-envelope"></i>&nbsp;Contact</a>
+        </li>
+        <li>
+        <a href="https://github.com/hellerve/Detanglement"><i class="fa fa-github"></i>&nbsp;Github</a>
+        </li>
+      </ul>
+    </nav>
+    {% endif %}
+<!-- Container -->
+    <div class="div_center" align="center">
+    <div class="div_main">
+            {% block main %}
+            {{ main }}
+            {% endblock %}
+            {% if not main %}
+            <div class="div_main_top_spacer"></div>
+            <div id="content" class="div_body">
+
+                    <!-- Content -->
+                        <br/>
+                        {% block pretitle %}{% endblock %}
+                        {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+                        {% block content %}
+                        {% block object-tools %}{% endblock %}
+                        {{ content }}
+                        {% endblock %}
+                        {% block sidebar %}{% endblock %}
+                        <br/>
+
+                        <div class="div_foot">
+                            <hr />
+                            <p><i class="fa fa-copyright"></i>&nbsp;No rights reserved. Proudly made with VI only.</p>
+                        </div>
+                        <!-- END Content -->
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+<!-- END Container -->
+
+</body>
+</html>

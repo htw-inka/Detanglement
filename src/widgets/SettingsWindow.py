@@ -2,12 +2,13 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-#Python 3 Hack; QString is not compatible with Py3 :(
+# Python 3 Hack; QString is not compatible with Py3 :(
 try:
     from PyQt5.QtCore import QString
 except ImportError:
-    #it's not defined :(
+    # it's not defined :(
     QString = type("")
+
 
 class SettingsWindow(QtWidgets.QDialog):
     """
@@ -29,8 +30,6 @@ class SettingsWindow(QtWidgets.QDialog):
         self.config = config_object
         self.api_names = api_names
         self.toggled = False
-        self.mapToggled = False
-        self.apiToggled = False
         self._makeGUI()
         self._makeSettings()
 
@@ -39,9 +38,8 @@ class SettingsWindow(QtWidgets.QDialog):
         self.setWindowTitle('Entanglement - Settings')
         self.setGeometry(QtCore.QRect(200, 100, 300, 400))
         self.setFixedSize(300, 400)
-        self.setWindowIcon(QtGui.QIcon(
-                            QString(
-                                self.path + '/images/icon.png')))
+        self.setWindowIcon(QtGui.QIcon(QString(self.path +
+                                               '/images/icon.png')))
         self.exitAction = QtWidgets.QAction('Exit', self)
         self.exitAction.setShortcut('Ctrl+Q')
         self.exitAction.triggered.connect(self._doClose)
@@ -49,7 +47,7 @@ class SettingsWindow(QtWidgets.QDialog):
     def _makeSettings(self):
         """Creates the content for the Window(buttons and so on)."""
         self.locate = QtWidgets.QCheckBox("Geolocation", self)
-        if self.config.configs["geo_location"] == True:
+        if self.config.configs.value("geo_location", False):
                 self.locate.toggle()
         self.locate.move(10, 10)
         self.locate.stateChanged.connect(self._geoLocate)
@@ -57,31 +55,31 @@ class SettingsWindow(QtWidgets.QDialog):
         self.maplabel.setGeometry(0, 30, 250, 20)
         self.maplabel.setText("Map to use:")
         self.google = QtWidgets.QCheckBox("Google Maps", self)
-        if self.config.configs["map"] == "google":
+        if self.config.configs.value("map", "google") == "google":
             self.google.toggle()
         self.google.move(10, 50)
         self.google.stateChanged.connect(self._googleMaps)
         self.osm = QtWidgets.QCheckBox("OSM", self)
-        if self.config.configs["map"] == "osm":
+        if self.config.configs.value("map", "google") == "osm":
             self.osm.toggle()
         self.osm.move(130, 50)
         self.osm.stateChanged.connect(self._osm)
-        #self.karto = QtWidgets.QCheckBox("Kartograph", self)
-        #if self.config.configs["map"] == "kartograph":
-        #    self.karto.toggle()
-        #self.karto.move(200, 50)
-        #self.karto.stateChanged.connect(self._kartograph)
+        # self.karto = QtWidgets.QCheckBox("Kartograph", self)
+        # if self.config.configs["map"] == "kartograph":
+        #     self.karto.toggle()
+        # self.karto.move(200, 50)
+        # self.karto.stateChanged.connect(self._kartograph)
         self.maps = QtWidgets.QButtonGroup()
         self.maps.setExclusive(True)
         self.maps.addButton(self.google)
-        #self.maps.addButton(self.karto)
+        # self.maps.addButton(self.karto)
         self.maps.addButton(self.osm)
         self.apilabel = QtWidgets.QLabel(self)
         self.apilabel.setGeometry(0, 70, 280, 20)
         self.apilabel.setText("Data sets to use(will take effect at restart):")
         for i, api in enumerate(self.api_names):
             x = QtWidgets.QCheckBox(api, self)
-            if api in self.config.configs['apis']:
+            if api in self.config.configs.value('apis', "WorldBank"):
                 x.toggle()
             x.move(10, 90+(i*20))
             x.stateChanged.connect(self._twitterAPI)
@@ -95,9 +93,9 @@ class SettingsWindow(QtWidgets.QDialog):
         """
         self.toggled = True
         if state == QtCore.Qt.Checked:
-            self.config.configs["geo_location"] = True
+            self.config.configs.setValue("geo_location", True)
         else:
-            self.config.configs["geo_location"] = False
+            self.config.configs.setValue("geo_location", False)
 
     def _googleMaps(self, state):
         """
@@ -107,9 +105,9 @@ class SettingsWindow(QtWidgets.QDialog):
         state -- the state of the checkbox
         """
         self.toggled = True
-        self.mapToggled = True
+        self.config.configs.setValue("api_toggled", True)
         if state == QtCore.Qt.Checked:
-            self.config.configs["map"] = "google"
+            self.config.configs.setValue("map", "google")
 
     def _kartograph(self, state):
         """
@@ -119,9 +117,9 @@ class SettingsWindow(QtWidgets.QDialog):
         state -- the state of the checkbox
         """
         self.toggled = True
-        self.mapToggled = True
+        self.config.configs.setValue("api_toggled", True)
         if state == QtCore.Qt.Checked:
-            self.config.configs["map"] = "kartograph"
+            self.config.configs.setValue("map", "kartograph")
 
     def _osm(self, state):
         """
@@ -131,9 +129,9 @@ class SettingsWindow(QtWidgets.QDialog):
         state -- the state of the checkbox
         """
         self.toggled = True
-        self.mapToggled = True
+        self.config.configs.setValue("api_toggled", True)
         if state == QtCore.Qt.Checked:
-            self.config.configs["map"] = "osm"
+            self.config.configs.setValue("map", "osm")
 
     def _twitterAPI(self, state):
         """
@@ -145,16 +143,15 @@ class SettingsWindow(QtWidgets.QDialog):
         """
         self.toggled = True
         if state == QtCore.Qt.Checked:
-            if "Twitter" not in self.config.configs["apis"]:
-                self.apiToggled = True
-                self.config.configs["apis"].append("Twitter")
+            if "Twitter" not in self.config.configs.value("apis"):
+                new_list = self.config.configs.value("apis").append("Twitter")
+                self.config.configs.setValue("apis", new_list)
+                self.config.configs.setValue("api_toggled", True)
         else:
-            if "Twitter" in self.config.configs["apis"]:
-                self.config.configs["apis"].remove("Twitter")
-
-    def _saveSettings(self):
-        """Saves the current state of the settings."""
-        self.config.save()
+            if "Twitter" in self.config.configs.value("apis"):
+                new_list = self.config.configs.value("apis").remove("Twitter")
+                self.config.configs.setValue("apis", new_list)
+                self.config.configs.setValue("api_toggled", True)
 
     def closeEvent(self, event):
         """
@@ -166,7 +163,8 @@ class SettingsWindow(QtWidgets.QDialog):
         """
         self._doClose()
 
-    #prompts whether the user is sure to close. Invoked when the user exits the window
+    # prompts whether the user is sure to close.
+    # Invoked when the user exits the window
     def _doClose(self):
         """
         Prompts whether the user wants to save the state of the settings.
@@ -174,16 +172,17 @@ class SettingsWindow(QtWidgets.QDialog):
         """
         if self.toggled:
             reply = QtWidgets.QMessageBox.question(self,
-                                              'Message',
-                                              'New Settings are unsaved.' +
-                                              '\nDo you want to apply them before exiting?',
-                                              QtWidgets.QMessageBox.Yes |
-                                              QtWidgets.QMessageBox.No,
-                                              QtWidgets.QMessageBox.No)
+                                                   'Message',
+                                                   'New Settings are ' +
+                                                   'unsaved.\nDo you want ' +
+                                                   'to apply them before ' +
+                                                   'exiting?',
+                                                   QtWidgets.QMessageBox.Yes |
+                                                   QtWidgets.QMessageBox.No,
+                                                   QtWidgets.QMessageBox.No)
             if reply == QtWidgets.QMessageBox.Yes:
-                if self.apiToggled:
-                    self.config.configs["toggled"] = True
-                self._saveSettings()
+                if self.toggled:
+                    self.config.configs.setValue("toggled", True)
                 self.close()
             else:
                 self.close()
@@ -191,6 +190,6 @@ class SettingsWindow(QtWidgets.QDialog):
             self.close()
 
 
-#Not a main module
+# Not a main module
 if __name__ == "__main__":
     raise ImportError("This is not supposed to be a main module.")

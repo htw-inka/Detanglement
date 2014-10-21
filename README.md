@@ -1,6 +1,10 @@
 Detanglement
 ============
 
+![Version](http://img.shields.io/badge/version-0.3.0-yellow.svg)
+![License](http://img.shields.io/badge/license-GPL-blue.svg)
+
+
 This repo contains a research project I work on at FKI/HTW Berlin.
 As with most of my repositories, this is a work-in-progress, more specifically,
 an alpha.
@@ -9,6 +13,16 @@ It is a tool that visualizes big amounts of geolocalized data on-demand.
 At the moment, only a proof-of-concept plugin for WorldBanks' Indicator API
 is working with it, but it can theoretically be extended to work with many
 different APIs; that is the goal, anyway.
+
+Right now, the application is updated to be a webapp using django. As soon
+as it is online, I will get you a link.
+
+Table of Contents
+-----------------
+1. **[Requirements](#requirements)**
+2. **[Usage](#usage)**
+3. **[Writing Plugins](#writing-plugins)**
+4. **[Contribute](#contribute)**
 
 Requirements
 ------------
@@ -56,15 +70,15 @@ can explore the tool by typing:
 Which loads the script with WorldBanks' Indicator API and shows the tools
 capabilities pretty well. Click around, make yourself at home.
 
-![This is what you should see](https://github.com/hellerve/Detanglement/raw/master/rc/Documentation/startup.png "This is what you should see")
+![This is what you should see](rc/Documentation/startup.png "This is what you should see")
 
-![Geolocation](https://github.com/hellerve/Detanglement/raw/master/rc/Documentation/geolocation.png "If you want it to, the tool even geolocalizes you!")
+![Geolocation](rc/Documentation/geolocation.png "If you want it to, the tool even geolocalizes you!")
 
 Sooner or later you will want to visualize something, because, you know,
 that is what the tool is about. You can click any marker; a window will pop
 open and ask you to apply filters. 
 
-![You will be greeted by this window](https://github.com/hellerve/Detanglement/raw/master/rc/Documentation/filters.png "You will be greeted by this window")
+![You will be greeted by this window](rc/Documentation/filters.png "You will be greeted by this window")
 
 Certain filters will not be available for certain
 areas, but you will see that by experimenting. Other filters(like `Population
@@ -73,14 +87,14 @@ by the search bar or by hand(but that might be pretty unconformtable, because
 WorldBank provides well over 9000(no pun intended) filters. You can also supply it
 regular expressions. If those are not valid, it will try to search it literally.
 
-![Regexes! Yay!](https://github.com/hellerve/Detanglement/raw/master/rc/Documentation/regex.png "Regexes! Yay!")
+![Regexes! Yay!](rc/Documentation/regex.png "Regexes! Yay!")
 
 Sooner or later you will find the filters you want to apply: Dragging them into
 the second(empty) list will select them and if you click apply, a different window
 should open and visualize the filters for you - except if you get a notification that
 the filter did not provide any data.
 
-![Score! Visuals!](https://github.com/hellerve/Detanglement/raw/master/rc/Documentation/visuals.png "Score! Visuals")
+![Score! Visuals!](rc/Documentation/visuals.png "Score! Visuals")
 
 If you click the settings icon(the little cogwheel in the toolbar), you will also
 have the possibility to select an alternative map(Kartograph is not working right now,
@@ -107,31 +121,29 @@ Your plugin needs to have a single file that needs to be called from outside,
 with a single class(there can be more, but I need that one class) in it that 
 needs to meet the following criteria:
 
-    [1] The constructor is either called without arguments or with the API
-        keys as arguments.
-    [2] There is a public(no underscore) variable of type bool named 
-        `requiresFilter` which is either set to true(the API needs filters) or
-        false(it does not).
-    [3] There is a public method named `getLocations()` that takes no arguments
-        and returns a list of locations. Locations can either be country names
-        or city names.
-    [4] If the API requires a Filter(`requiresFilter = True`), there must be a
-        method named `getFilters()` that returns a list of human-readable filters.
-    [5] There is a public method named `getDataForLocation()` that takes a location,
-        a filter(both in the format provided by `getLocations()` and `getFilters()`
-        respectively) and a time range(two values in a single string seperated by commas,
-        e.g. "2010:2012" for a timeline from 2010 until 2012(both years included)).
+    1. The constructor is either called without arguments or with the API
+       keys as arguments.
+    2. There is a public(no underscore) variable of type bool named 
+       `requiresFilter` which is either set to true(the API needs filters) or
+       false(it does not).
+    3. There is a public method named `getLocations()` that takes no arguments
+       and returns a list of locations. Locations can either be country names
+       or city names.
+    4. If the API requires a Filter(`requiresFilter = True`), there must be a
+       method named `getFilters()` that returns a list of human-readable filters.
+    5. There is a public method named `getDataForLocation()` that takes a location,
+       a filter(both in the format provided by `getLocations()` and `getFilters()`
+       respectively) and a time range(two values in a single string seperated by commas,
+       e.g. "2010:2012" for a timeline from 2010 until 2012(both years included)).
 
 If you are able to provide those features, you are ready to try them out. The easiest way
 is to provide the needed API keys and the API name to Detanglement via the database 
 window(the dotted rectangle in the iconed bar of the main window) and then restart it.
 
-![The API adding window](https://github.com/hellerve/Detanglement/raw/master/rc/Documentation/addingapis.png "You can provide up to ten keys to the database")
+![The API adding window](master/rc/Documentation/addingapis.png "You can provide up to ten keys to the database")
 
 To be completely sure that the API will be loaded, you can run `Tangle.py -a MyApiName`
 which will load your API if possible. If not, nothing will be loaded.
-
-More coming soon.
 
 Contribute
 ----------
@@ -143,13 +155,36 @@ You can also look at both files by invoking `./Tangle.py -d` or `./Tangle.py --d
 or, if you have installed it (kudos, you are likely to use Linux, because it is a pain
 to install it on any other platform at the moment) `Tangle -d`.
 
-The feature I am currently working on is a GUI frontend for the database so you can
-conveniently add new APIs and API keys to the application. A database wrapper needs
-to be created sooner or later as well(as it stands, the only database code is inlined
-into a definition in the main script; not very beautiful).
+I am currently working on making the whole application a web app. I am using Django
+for that.
 
 Also, the help file is a mess that needs to be cleaned up by someone who enjoys writing
 HTML files more than me. It is a non-informative mess.
 
 I suggest you code a plugin and see if it works. If it does not, we can look at what is
 the problem and fix it together.
+
+Right now, the application is made into a webapp. I use django for that purpose, but I am
+still a rookie in using it, so any help is appreciated.
+
+Technical Rant
+--------------
+
+This section makes understanding the code much easier. It must not be read; however,
+if you plan on contributing to this software, you might as well spend some time on
+learning the philosophy behind it.
+
+I chose python for the job, because everything in Python is an object and I can theoretically
+apply category theory to it to transform any type of data you provide into a plottable,
+quantifiable set. The problem with that approach is the (admittedly very hard) problem of
+identifying the incoming data and what the significant bits to plot are. This is where
+philosophy comes in; one might not always get the output he expected or hoped for because
+the program applied the wrong filters. The basic problem boils down to this: identify the
+set, transform it, quantify it, plot it. The master branch of this program has only very basic 
+capabilities in identifiying the data and does not filter much of it. I am working on a more
+sophisticated mechanism that does the job, but it is very unstable, unreliable and not very 
+sharable at the moment, so if you wish to extend the project, keep in mind that this is only
+a rough sketch of what I wish to be possible.
+
+I tried to keep this intro as brief and high level as possible. If you have, questions, 
+suggestions or anything you want to talk to me about it, feel free to contact me.
