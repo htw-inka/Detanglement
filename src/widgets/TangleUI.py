@@ -64,7 +64,7 @@ class TangleUI(QtWidgets.QMainWindow):
         self._setupBars()
         self.setCentralWidget(self.webView)
         self.webView.loadFinished.connect(self.show)
-        # self.setUnifiedTitleAndToolBarOnMac(True)
+        self.setUnifiedTitleAndToolBarOnMac(True)
         self._loadPrompt()
 
     def _loadPrompt(self):
@@ -90,7 +90,6 @@ class TangleUI(QtWidgets.QMainWindow):
                         self.preferences.configs.value('gnames', None))
         zoom = self.webView.getZoomLevel()
 
-        # print("Start:" + str(datetime.datetime.now()))
         object_count = 0
         for api in self.apis:
             object_count += len(api.locations)
@@ -119,18 +118,17 @@ class TangleUI(QtWidgets.QMainWindow):
                 else:
                     self.increment.emit()
                     QtWidgets.QApplication.processEvents()
-        # print("End: " + str(datetime.datetime.now()) + "\n")
         self.webView.success("All data points added.")
 
     def _setWindowStyle(self):
         """Sets the window style."""
         height = QtWidgets.QStyle.PM_TitleBarHeight
         bar = QtWidgets.QStyleOptionTitleBar()
-        titleBarHeight = self.style().pixelMetric(height, bar, self),
+        titleBarHeight = self.style().pixelMetric(height, bar, self)
         geometry = self.app.desktop().availableGeometry()
         geometry.setHeight(geometry.height() - (titleBarHeight))
         self.setGeometry(geometry)
-        self.setWindowTitle('Entanglement Home')
+        self.setWindowTitle('Detanglement Home')
         self.setWindowIcon(QtGui.QIcon(QString(self.path +
                                                '/images/icon.png')))
 
@@ -197,7 +195,7 @@ class TangleUI(QtWidgets.QMainWindow):
 
     def _showHome(self):
         """Brings the user back to the main page."""
-        self.setWindowTitle('Entanglement Home')
+        self.setWindowTitle('Detanglement Home')
         self.webView.setUrl(QtCore.QUrl.fromLocalFile(self.path +
                                                       "/html/index.html"))
         self.webView.page().mainFrame().evaluateJavaScript("load()")
@@ -251,7 +249,7 @@ class TangleUI(QtWidgets.QMainWindow):
 
     def _showHelp(self):
         """Displays the HTML help file."""
-        self.setWindowTitle('Entanglement Help')
+        self.setWindowTitle('Detanglement Help')
         self.webView.setUrl(QtCore.QUrl.fromLocalFile(self.path +
                                                       "/html/helpfiles/" +
                                                       "help.htm"))
